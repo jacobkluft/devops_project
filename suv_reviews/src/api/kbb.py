@@ -45,48 +45,54 @@ def add_kbb_review():
 
 @bp.route('/<int:id>', methods=['PUT'])
 def update(id: int):
-    r = kbb.query.get_or_404(id)  # get the user from the database
+    # check the reviews input
+    num_reviews = request.json['reviews']
+    if num_reviews == None:
+        return jsonify(False)
+
+    # check the score input
+    score = request.json['score']
+    if score == None:
+        return jsonify(False)
+
+    # check the recomended input
+    recomended = request.json['recomended']
+    if recomended == None:
+        return jsonify(False)
 
     try:
-        # update the reviews
-        num_reviews = request.json['reviews']
-        if num_reviews != None:
-            r.num_reviews = num_reviews
+        # search for the suv_year_id
+        kbb_reviews = kbb.query.all()  # ORM performs SELECT query
+        for review in kbb_reviews:
+            if review.kbb_review_id == id:
+                # update the review record if the id is found
+                review.reviews = request.json['reviews'],
+                review.score = request.json['score'],
+                review.recomended = request.json['recomended']
 
-        # update the score
-        score = request.json['score']
-        if score != None:
-            r.score = score
-
-        # update the recomended
-        recomended = request.json['recomended']
-        if recomended != None:
-            r.recomended = recomended
-
-        db.session.commit()  # execute the update statement
-        return jsonify(True)
-
+                db.session.update(review)
+                db.session.commit()  # execute the update statement
+                return jsonify(True)
     except:
         # something went wrong :(
         return jsonify(False)
 
+    # suv_year_id not found
+    return jsonify(False)
 
-# deletes one existing Kelly Blue Book Review where the suv_year_id is equal to the input id
+# deletes one existing Kelly Blue Book Review
 
 
 @bp.route('/<int:id>', methods=['DELETE'])
 def delete(id: int):
-    kbb_reviews = kbb.query.all()  # ORM performs SELECT query
+    r = kbb.query.get_or_404(id)
 
-    for r in kbb_reviews:
-        if r.suv_year_id == id:
-            try:
-                db.session.delete(r)  # prepare DELETE statement
-                db.session.commit()  # execute DELETE statement
-                return jsonify(True)
-            except:
-            # something went wrong :(
-                return jsonify(False)
-                
-    # unable to find the suv_year_id in the kbb_reviews table
-    return jsonify(False)
+    # try:
+    db.session.delete(r)  # prepare DELETE statement
+    db.session.commit()  # execute DELETE statement
+    # except:
+    # return after looking at all the records
+    # return jsonify(False)
+
+    # return after looking at all the records
+    return jsonify(True)
