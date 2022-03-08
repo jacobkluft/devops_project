@@ -86,29 +86,22 @@ def test_add_suv():
 
 
 def test_update_kbb_reviews():
-    suv_year_id = 15
-    post_url = "http://localhost:5000/kbb/" + str(suv_year_id)
-    data = {
-        "reviews": "100",
-        "score": "4.5",
-        "recomended": "85"
-    }
-
-    # Dump the todo object as a json string
-    data = json.dumps(data)
+    kbb_review_id = 35
+    post_url = "http://localhost:5000/kbb/" + \
+        str(kbb_review_id) + "?reviews=100&score=4.5&recomended=80.0"
 
     # Create the request object
-    req = urllib.request.Request(url=post_url, data=bytes(
-        data.encode("utf-8")), method="PUT")
+    req = urllib.request.Request(url=post_url, data=None, method="PUT")
 
     # Post the request
     assert post_request(req)
+
 
 # delete all rows in the kbb_review table where the suv_year_id is equal to the input id
 
 
 def delete_kbb_review():
-    suv_year_id = 15
+    suv_year_id = 14
     post_url = "http://localhost:5000/kbb/" + str(suv_year_id)
 
     # Create the request object

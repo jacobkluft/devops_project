@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, abort, request
+from flask import Flask, Blueprint, jsonify, abort, request
 from ..models import manufacturer, suv, market, kbb, edmunds, cars_dotcom, sales_region, suv_year, db
 
 bp = Blueprint('kbb', __name__, url_prefix='/kbb')
@@ -45,40 +45,20 @@ def add_kbb_review():
 
 @bp.route('/<int:id>', methods=['PUT'])
 def update(id: int):
-    # check the reviews input
-    num_reviews = request.json['reviews']
-    if num_reviews == None:
-        return jsonify(False)
+    kbb_reviews = kbb.query.all()  # ORM performs SELECT query
 
-    # check the score input
-    score = request.json['score']
-    if score == None:
-        return jsonify(False)
+    for r in kbb_reviews:
+        if r.kbb_review_id == id:
+            # update the review record
+            r.reviews = int(request.args.get('reviews'))
+            r.score = float(request.args.get('score'))
+            r.recomended = float(request.args.get('recomended'))
 
-    # check the recomended input
-    recomended = request.json['recomended']
-    if recomended == None:
-        return jsonify(False)
+            # db.session.update(r)
+            db.session.commit()  # execute the update statement
+            # return jsonify(True)
 
-    try:
-        # search for the suv_year_id
-        kbb_reviews = kbb.query.all()  # ORM performs SELECT query
-        for review in kbb_reviews:
-            if review.kbb_review_id == id:
-                # update the review record if the id is found
-                review.reviews = request.json['reviews'],
-                review.score = request.json['score'],
-                review.recomended = request.json['recomended']
-
-                db.session.update(review)
-                db.session.commit()  # execute the update statement
-                return jsonify(True)
-    except:
-        # something went wrong :(
-        return jsonify(False)
-
-    # suv_year_id not found
-    return jsonify(False)
+    return jsonify(True)
 
 # deletes one existing Kelly Blue Book Review
 

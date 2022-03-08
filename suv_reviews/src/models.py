@@ -9,6 +9,7 @@ db = SQLAlchemy()
 # https://docs.sqlalchemy.org/en/14/core/metadata.html#sqlalchemy.schema.Column
 # https://flask-sqlalchemy.palletsprojects.com/en/2.x/models/#many-to-many-relationships
 
+
 class manufacturer(db.Model):
     __tablename__ = 'manufacturers'
     manufacturer_id = db.Column(
@@ -20,6 +21,7 @@ class manufacturer(db.Model):
 
     def __init__(self, name: str):
         self.name = name
+
 
 class suv(db.Model):
     __tablename__ = 'suvs'
@@ -48,6 +50,7 @@ class suv(db.Model):
             'manufacturer_id': self.manufacturer_id
         }
 
+
 class market(db.Model):
     __tablename__ = 'markets'
     market_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -55,6 +58,7 @@ class market(db.Model):
 
     def __init__(self, name: str):
         self.name = name
+
 
 class kbb(db.Model):
     __tablename__ = 'kbb_reviews'
@@ -72,9 +76,9 @@ class kbb(db.Model):
 
     def serialize(self):
         return {
-            'kbb_review_id': self.kbb_review_id,
-            'suv_year_id': self.suv_year_id,
-            'reviews': self.reviews,
+            'kbb_review_id': int(self.kbb_review_id),
+            'suv_year_id': int(self.suv_year_id),
+            'reviews': int(self.reviews),
             'score': float(self.score),
             'recomended': float(self.recomended)
         }
@@ -92,6 +96,7 @@ class edmunds(db.Model):
         self.reviews = reviews
         self.score = score
 
+
 class cars_dotcom(db.Model):
     __tablename__ = 'cars_dotcom_reviews'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -105,6 +110,7 @@ class cars_dotcom(db.Model):
         self.reviews = reviews
         self.score = score
         self.cost_new = cost_new
+
 
 sales_region = db.Table(
     'sales_regions',
